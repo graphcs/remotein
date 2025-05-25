@@ -1,6 +1,6 @@
 # 🖥️ Python Remote Control Software
 
-A simple yet powerful remote control software written in Python that allows you to control one computer from another, similar to Zoom Remote Control or AnyDesk.
+A simple yet powerful remote control software written in Python that allows you to control one computer from another, similar to AnyDesk.
 
 ## ✨ Features
 
