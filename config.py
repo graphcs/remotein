@@ -13,8 +13,8 @@ SERVER_HOST = "0.0.0.0"  # Listen on all interfaces (0.0.0.0) or specific IP
 SERVER_PORT = 9999  # Port to listen on
 
 # Screen Capture Settings
-SCREEN_QUALITY = 50  # JPEG quality (1-100, higher = better quality but slower)
-SCREEN_SCALE = 0.5  # Scale factor (0.1-1.0, lower = faster but less detail)
+SCREEN_QUALITY = 75  # JPEG quality (1-100, higher = better quality but slower)
+SCREEN_SCALE = 0.7  # Scale factor (0.1-1.0, lower = faster but less detail)
 FRAME_RATE = 30  # Target frames per second (10-60)
 
 # Performance Settings

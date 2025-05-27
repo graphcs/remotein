@@ -45,6 +45,13 @@ class RemoteControlClient:
         self.frames_received = 0
         self.last_frame_time = time.time()
 
+        # Store display positioning for accurate mouse mapping
+        self.display_x = 0
+        self.display_y = 0
+        self.display_width = 0
+        self.display_height = 0
+        self.scale_factor = 1.0
+
         # Initialize pygame
         pygame.init()
         pygame.display.set_caption(WINDOW_TITLE)
@@ -153,38 +160,25 @@ class RemoteControlClient:
 
     def get_scaled_mouse_pos(self, mouse_pos):
         """Convert window mouse position to remote screen coordinates"""
-        if not self.remote_image:
+        if not self.remote_image or self.display_width == 0 or self.display_height == 0:
             return None
 
         mouse_x, mouse_y = mouse_pos
 
-        # Get the actual display area of the remote image
-        screen_rect = self.screen.get_rect()
-        img_rect = self.remote_image.get_rect()
-
-        # Calculate scaling to fit screen while maintaining aspect ratio
-        scale_x = screen_rect.width / img_rect.width
-        scale_y = screen_rect.height / img_rect.height
-        scale = min(scale_x, scale_y)
-
-        # Calculate the actual display size and position
-        display_width = int(img_rect.width * scale)
-        display_height = int(img_rect.height * scale)
-        display_x = (screen_rect.width - display_width) // 2
-        display_y = (screen_rect.height - display_height) // 2
-
         # Check if mouse is within the remote screen area
         if (
-            display_x <= mouse_x <= display_x + display_width
-            and display_y <= mouse_y <= display_y + display_height
+            self.display_x <= mouse_x <= self.display_x + self.display_width
+            and self.display_y <= mouse_y <= self.display_y + self.display_height
         ):
 
-            # Convert to remote coordinates
-            relative_x = mouse_x - display_x
-            relative_y = mouse_y - display_y
+            # Convert to remote coordinates using stored display info
+            relative_x = mouse_x - self.display_x
+            relative_y = mouse_y - self.display_y
 
-            remote_x = (relative_x / display_width) * img_rect.width
-            remote_y = (relative_y / display_height) * img_rect.height
+            # Calculate remote coordinates based on original image size
+            img_rect = self.remote_image.get_rect()
+            remote_x = (relative_x / self.display_width) * img_rect.width
+            remote_y = (relative_y / self.display_height) * img_rect.height
 
             return (remote_x, remote_y)
 
@@ -407,11 +401,14 @@ class RemoteControlClient:
                         self.remote_image, (new_width, new_height)
                     )
 
-                    # Center the image
-                    x = (screen_rect.width - new_width) // 2
-                    y = (screen_rect.height - new_height) // 2
+                    # Center the image and store display info for mouse mapping
+                    self.display_x = (screen_rect.width - new_width) // 2
+                    self.display_y = (screen_rect.height - new_height) // 2
+                    self.display_width = new_width
+                    self.display_height = new_height
+                    self.scale_factor = scale
 
-                    self.screen.blit(scaled_image, (x, y))
+                    self.screen.blit(scaled_image, (self.display_x, self.display_y))
                 else:
                     self.draw_connection_status()
 
