@@ -435,12 +435,20 @@ class RemoteControlClient:
 def main():
     if len(sys.argv) > 1:
         host = sys.argv[1]
+        # Check if port is included in host (for ngrok URLs)
+        if ":" in host:
+            host, port_str = host.rsplit(":", 1)
+            try:
+                port = int(port_str)
+            except ValueError:
+                port = 9999
+        else:
+            port = 9999
     else:
         host = input("Enter server IP address (default: localhost): ").strip()
         if not host:
             host = "localhost"
-
-    port = 9999
+        port = 9999
 
     client = RemoteControlClient()
     client.run(host, port)
